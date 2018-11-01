@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.jacky.log.Logger;
 import com.jacky.util.AppUtil;
+import com.jacky.util.EDA;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +50,16 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.container, new MainFragment());
         transaction.commit();
+
+        TextView md5View = findViewById(R.id.md5);
+        md5View.setText(EDA.MD5.digest("123445"));
+
+        String s = EDA.AES.encrypt("123123213叫背个阁下", "1234566766文");
+        TextView aesView = findViewById(R.id.aes);
+        aesView.setText(s);
+
+        TextView aesdView = findViewById(R.id.aes_d);
+        aesdView.setText(EDA.AES.decrypt(s, "1234566766文"));
     }
 
     @Override
