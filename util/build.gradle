@@ -30,5 +30,5 @@ dependencies {
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.jacky.log:logger:0.0.4'
+    implementation 'com.jacky.log:logger:0.0.5'
 }
