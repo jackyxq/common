@@ -8,6 +8,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -27,49 +28,49 @@ import java.util.List;
 
 public final class ViewUtils {
 
-    public static <T extends View> T findView(Activity activity, @IdRes int id) {
+    public static <T extends View> T findView(@NonNull Activity activity, @IdRes int id) {
         return (T) activity.findViewById(id);
     }
 
-    public static <T extends View> T findView(View group, @IdRes int id) {
+    public static <T extends View> T findView(@NonNull View group, @IdRes int id) {
         return (T) group.findViewById(id);
     }
 
-    public static <T extends View> T findView(Dialog dialog, @IdRes int id) {
+    public static <T extends View> T findView(@NonNull Dialog dialog, @IdRes int id) {
         return (T) dialog.findViewById(id);
     }
 
-    public static void setViewVisible(View... views) {
+    public static void setViewVisible(@NonNull View... views) {
         for(View view : views) {
             view.setVisibility(View.VISIBLE);
         }
     }
 
-    public static void setViewGone(View... views) {
+    public static void setViewGone(@NonNull View... views) {
         for(View view : views) {
             view.setVisibility(View.GONE);
         }
     }
 
-    public static void setViewParentVisibility(View view, int visible) {
+    public static void setViewParentVisibility(@NonNull View view, int visible) {
         View p = (View) view.getParent();
         p.setVisibility(visible);
     }
 
-    public static void startActivity(Context context, Class<? extends Activity> clazz) {
+    public static void startActivity(@NonNull Context context, Class<? extends Activity> clazz) {
         context.startActivity(new Intent(context, clazz));
     }
 
-    public static void finishActivity(Activity activity, Class<? extends Activity> clazz) {
+    public static void finishActivity(@NonNull Activity activity, Class<? extends Activity> clazz) {
         activity.startActivity(new Intent(activity, clazz));
         activity.finish();
     }
 
-    public static void startActivityForResult(Activity context, Class<? extends Activity> clazz, int code) {
+    public static void startActivityForResult(@NonNull Activity context, Class<? extends Activity> clazz, int code) {
         context.startActivityForResult(new Intent(context, clazz), code);
     }
 
-    public static void startActivityForResult(Fragment fragment, Class<? extends Activity> clazz, int code) {
+    public static void startActivityForResult(@NonNull Fragment fragment, Class<? extends Activity> clazz, int code) {
         fragment.startActivityForResult(new Intent(fragment.getContext(), clazz), code);
     }
 
@@ -78,7 +79,7 @@ public final class ViewUtils {
      * @param view
      * @return
      */
-    public static boolean isTextEmpty(TextView view) {
+    public static boolean isTextEmpty(@NonNull TextView view) {
         return view.getText().length() <= 0;
     }
 
@@ -159,12 +160,12 @@ public final class ViewUtils {
      * @param fragment
      * @param layoutId
      */
-    public static synchronized void switchFragment(FragmentActivity activity, Class<? extends Fragment> fragment, @IdRes int layoutId) {
+    public static synchronized void switchFragment(@NonNull FragmentActivity activity,@NonNull Class<? extends Fragment> fragment, @IdRes int layoutId) {
         String tag = fragment.getSimpleName();
         FragmentManager manager = activity.getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        Fragment baseFragment = (Fragment) manager.findFragmentByTag(tag);
+        Fragment baseFragment = manager.findFragmentByTag(tag);
         List<Fragment> list = manager.getFragments();
         if(list != null) {
             for (Fragment f : list) {
@@ -181,15 +182,15 @@ public final class ViewUtils {
                 baseFragment = fragment.newInstance();
                 transaction.add(layoutId, baseFragment, tag);
             } catch (InstantiationException e) {
-                Logger.e("V", "", e);
+                Logger.e(e);
             } catch (IllegalAccessException e) {
-                Logger.e("V", "", e);
+                Logger.e(e);
             }
         }
         transaction.commitAllowingStateLoss();
     }
 
-    public static <T extends Fragment> T findFragment(FragmentActivity activity, Class<T> fragment) {
+    public static <T extends Fragment> T findFragment(@NonNull FragmentActivity activity,@NonNull Class<T> fragment) {
         String tag = fragment.getSimpleName();
         FragmentManager manager = activity.getSupportFragmentManager();
         Fragment baseFragment = manager.findFragmentByTag(tag);
