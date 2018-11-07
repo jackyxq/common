@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.jacky.log.Logger;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -85,6 +87,7 @@ public final class ViewUtils {
 
 
     @IntDef({ModeColorFilter.none, ModeColorFilter.backgroud, ModeColorFilter.image_drawable})
+    @Retention(RetentionPolicy.SOURCE)
     public @interface ModeColorFilter {
         int none = 0;
         int backgroud = 1;
