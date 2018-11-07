@@ -15,5 +15,5 @@ public @interface ApplicationContext {
 
     String[] value();
 
-    String ss = "ss";
+    String SharePrefence = "SharePrefence";
 }

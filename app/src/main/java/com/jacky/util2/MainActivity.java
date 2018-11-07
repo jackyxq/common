@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.jacky.log.Logger;
 import com.jacky.util.AppUtil;
 import com.jacky.util.EDA;
+import com.jacky.util.PreferenceUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
         TextView aesdView = findViewById(R.id.aes_d);
         aesdView.setText(EDA.AES.decrypt(s, "1234566766文"));
+
+        PreferenceUtils.put("file", "key", "ddddeeeeeeeetyyy");
+        String p = PreferenceUtils.getString("file", "key");
+        Logger.e(p);
     }
 
     @Override

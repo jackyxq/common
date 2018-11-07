@@ -18,7 +18,7 @@ public class App extends Application {
         mApp = this;
     }
 
-    @ApplicationContext(ApplicationContext.ss)
+    @ApplicationContext(ApplicationContext.SharePrefence)
     public static App getApp() {
         return mApp;
     }
