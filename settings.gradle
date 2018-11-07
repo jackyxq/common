@@ -1,2 +1,2 @@
-include ':app', ':util', ':processer'
+include ':app', ':util', ':annotations', ':compiler'
 rootProject.name = 'common'

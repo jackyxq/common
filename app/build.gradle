@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.7'
+        targetCompatibility = '1.7'
+    }
 }
 
 dependencies {
@@ -28,8 +32,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation project(path: ':util')
     implementation 'com.jacky.log:logger:0.0.5'
-    annotationProcessor project(':processer')
+    implementation project(':util')
+    implementation project(':annotations')
+    annotationProcessor project(':compiler')
 }
 

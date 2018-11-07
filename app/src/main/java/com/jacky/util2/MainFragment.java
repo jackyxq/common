@@ -40,5 +40,6 @@ public class MainFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Logger.w(AppUtil.isPermissionOK(permissions, grantResults));
+        new com.jacky.util.testClass().getMessage();
     }
 }
