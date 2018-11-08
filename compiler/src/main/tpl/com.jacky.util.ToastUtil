@@ -1,0 +1,97 @@
+package com.jacky.util;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.PixelFormat;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.jacky.log.Logger;
+
+import static android.content.Context.WINDOW_SERVICE;
+
+/**
+ * Created by lixinquan on 2017-07-10.
+ */
+
+public final class ToastUtil {
+
+    private static Toast mToast = Toast.makeText(%s, "", Toast.LENGTH_SHORT);
+
+    public static void showMsg(@StringRes int resId) {
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+        mToast.setText(resId);
+        mToast.show();
+    }
+
+    public static void showMsg(CharSequence text) {
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+        mToast.setText(text);
+        mToast.show();
+    }
+
+    public static void showLongMsg(@StringRes int resId) {
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+        mToast.setText(resId);
+        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.show();
+    }
+
+    public static void showLongMsg(CharSequence text) {
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+        mToast.setText(text);
+        mToast.setDuration(Toast.LENGTH_LONG);
+        mToast.show();
+    }
+
+    public static void showSnackBar(Activity activity, CharSequence text) {
+        View view = activity.getWindow().getDecorView();
+        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void showLongSnackBar(Activity activity, CharSequence text) {
+        View view = activity.getWindow().getDecorView();
+        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show();
+    }
+
+    public static void showSnackBar(Fragment fragment, CharSequence text) {
+        View view = fragment.getView();
+        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static boolean showToast(Context context, String string) {
+        //这个方法在小米mx5上不兼容
+        final WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        params.type = WindowManager.LayoutParams.TYPE_TOAST;
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        params.format = PixelFormat.TRANSLUCENT;
+        params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        params.gravity = Gravity.CENTER;
+
+        final TextView view = new TextView(context);
+        view.setText(string);
+        view.setTextColor(0xffffffff);
+        view.setBackgroundColor(0x7f000000);
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wm.removeView(view);
+            }
+        }, 1000);
+        try {
+            wm.addView(view, params);
+        } catch (Exception e) {
+            Logger.w(e);
+            return false;
+        }
+        return true;
+    }
+}

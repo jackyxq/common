@@ -4,6 +4,9 @@ import android.text.TextUtils;
 
 import com.jacky.log.Logger;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -54,7 +57,7 @@ public @interface EDA {
 
         private static SecretKeySpec getKey(String password) {
             byte[] bs = password.getBytes();
-            Logger.i(bs.length);
+            Logger.i("ori password's length:", bs.length);
             int count = 0;
             if(bs.length <= 16) count = 16 - bs.length;
             else if(bs.length <= 24) count = 24 - bs.length;
@@ -73,17 +76,17 @@ public @interface EDA {
          * 获取字符串信息摘要
          *
          * @param string
-         * @return 返回经过MD5算法加密后的字符串。如果string为null或空，则返回 null 值
+         * @return 返回经过MD5算法加密后的字符串。如果string为null或空，则返回空字符串
          */
         public static String digest(String string) {
-            return digest(string.getBytes());
+            return TextUtils.isEmpty(string) ? "" : digest(string.getBytes());
         }
 
         /**
          * 获取字符串信息摘要
          *
          * @param bytes
-         * @return 返回经过MD5算法加密后的字符串。如果string为null或空，则返回 null 值
+         * @return 返回经过MD5算法加密后的字符串
          */
         public static String digest(byte[] bytes) {
             if (bytes == null || bytes.length == 0) return "";
@@ -91,6 +94,41 @@ public @interface EDA {
             byte[] b = digest_md5(bytes);
             return Formatter.transferByte2String(b);
         }
+
+        /**
+         *  获取文件的信息摘要
+         * @param file
+         * @return
+         */
+        public static String digest(File file) {
+            if(file == null || !file.exists()) return "";
+
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(file);
+                MessageDigest mdTemp = MessageDigest.getInstance("MD5");
+                int i;
+                byte[] bytes = new byte[1024];
+                while (true) {
+                    i = stream.read(bytes);
+                    if(i == -1) break;
+                    mdTemp.update(bytes, 0, i);
+                }
+                byte[] b = mdTemp.digest();
+                return Formatter.transferByte2String(b);
+            } catch (Exception e) {
+                Logger.e(e);
+                return "";
+            } finally {
+                if(stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        }
+
         /**
          * 获取字符串信息摘要
          */

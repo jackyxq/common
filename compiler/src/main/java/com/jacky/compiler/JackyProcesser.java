@@ -61,14 +61,20 @@ public final class JackyProcesser extends AbstractProcessor {
             }
             String packageName = element.asType().toString().replace("()", "");
             String methodName = element.getSimpleName().toString();
+            String fullName = packageName + "." + methodName + "()";
 
             String values[] = element.getAnnotation(ApplicationContext.class).value();
             for(String s : values) {
+                String name;
                 if(ApplicationContext.SharePrefence.equals(s)) {
-                    String name = "com.jacky.util.PreferenceUtils";
-                    String content = readTemplete(name);
-                    generateJavaFile(name, String.format(content, packageName + "." + methodName + "()"));
+                    name = "com.jacky.util.PreferenceUtils";
+                } else if(ApplicationContext.Toast.equals(s)) {
+                    name = "com.jacky.util.ToastUtil";
+                } else {
+                    continue;
                 }
+                String content = readTemplete(name);
+                generateJavaFile(name, String.format(content, fullName));
             }
         }
         return true;
