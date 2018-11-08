@@ -22,33 +22,48 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public final class ToastUtil {
 
-    private static Toast mToast = Toast.makeText(%s, "", Toast.LENGTH_SHORT);
+    private static Toast mToast;
 
     public static void showMsg(@StringRes int resId) {
-        mToast.setGravity(Gravity.CENTER, 0, 0);
+        get(Toast.LENGTH_SHORT);
         mToast.setText(resId);
         mToast.show();
     }
 
     public static void showMsg(CharSequence text) {
-        mToast.setGravity(Gravity.CENTER, 0, 0);
+        get(Toast.LENGTH_SHORT);
         mToast.setText(text);
         mToast.show();
     }
 
     public static void showLongMsg(@StringRes int resId) {
-        mToast.setGravity(Gravity.CENTER, 0, 0);
+       get(Toast.LENGTH_LONG);
         mToast.setText(resId);
-        mToast.setDuration(Toast.LENGTH_LONG);
         mToast.show();
     }
 
     public static void showLongMsg(CharSequence text) {
-        mToast.setGravity(Gravity.CENTER, 0, 0);
+       get(Toast.LENGTH_LONG);
         mToast.setText(text);
-        mToast.setDuration(Toast.LENGTH_LONG);
         mToast.show();
     }
+
+    private static void get(int time) {
+            if(mToast != null) {
+                mToast.cancel();
+            }
+            mToast = Toast.makeText(%s, "", time);
+            mToast.setGravity(Gravity.CENTER, 0, 0);
+            mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View v) {}
+
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {
+                               mToast = null;
+                        }
+                    });
+        }
 
     public static void showSnackBar(Activity activity, CharSequence text) {
         View view = activity.getWindow().getDecorView();
