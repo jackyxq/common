@@ -1,4 +1,8 @@
 apply plugin: 'java-library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.jacky.annotations'
+version = '1.0.2'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

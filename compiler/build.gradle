@@ -1,4 +1,8 @@
 apply plugin: 'java-library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.jacky.util-compiler'
+version = '1.0.2'
 
 dependencies {
     compile 'com.google.auto:auto-common:0.8'
