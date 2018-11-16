@@ -5,7 +5,7 @@ import android.support.v4.util.Pair;
 import android.content.Context;
 
 /**
- * 对 SharePrefence 的简单封装
+ * A simple encapsulation tool class for SharePrefence
  */
 public final class PreferenceUtils {
 

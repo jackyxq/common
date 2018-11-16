@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * 用于生成 PreferenceUtils 和 ToastUtil 文件，只用于静态获取 Application 的方法中。<br><br>
+ * Used to generate PreferenceUtils and ToastUtil files, only for static methods of obtaining Application objects<br><br>
  *
  *
  * <code> @ApplicationContext({ApplicationContext.Toast,...})</code><br>

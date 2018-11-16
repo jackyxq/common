@@ -65,15 +65,16 @@ public final class JackyProcesser extends AbstractProcessor {
 
             String values[] = element.getAnnotation(ApplicationContext.class).value();
             for(String s : values) {
-                String name;
+                String name, content;
                 if(ApplicationContext.SharePrefence.equals(s)) {
                     name = "com.jacky.util.PreferenceUtils";
+                    content = PreferenceUtils.value;
                 } else if(ApplicationContext.Toast.equals(s)) {
                     name = "com.jacky.util.ToastUtil";
+                    content = ToastUtil.value;
                 } else {
                     continue;
                 }
-                String content = readTemplete(name);
                 generateJavaFile(name, String.format(content, fullName));
             }
         }
@@ -91,30 +92,4 @@ public final class JackyProcesser extends AbstractProcessor {
         }
     }
 
-    private String readTemplete(String name) {
-        ByteArrayOutputStream writer = new ByteArrayOutputStream();
-        FileInputStream stream = null;
-        byte[] bytes = new byte[1024];
-        int i = 0;
-        File file = new File("compiler/src/main/tpl/" + name);
-        String path = file.getAbsolutePath();
-        mMessage.printMessage(Diagnostic.Kind.WARNING, path);
-        try {
-            stream = new FileInputStream(file);
-            while (true) {
-                i = stream.read(bytes);
-                if(i == -1) break;
-                writer.write(bytes, 0, i);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            return writer.toString("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return writer.toString();
-        }
-    }
 }

@@ -2,7 +2,7 @@ apply plugin: 'java-library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.jacky.annotations'
-version = '1.0.2'
+version = rootProject.ext.ALL_VERSION
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

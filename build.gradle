@@ -22,7 +22,12 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
-
+ext {
+    ALL_VERSION = '1.0.3'
+    ALL_VERSION_CODE = 103
+}
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
