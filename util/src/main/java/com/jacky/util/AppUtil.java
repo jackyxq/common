@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
- * Created by lixinquan on 2018/10/29.
+ * Created by jacky on 2018/10/29.
  */
 public final class AppUtil {
 
@@ -173,5 +173,4 @@ public final class AppUtil {
         }
         return null;
     }
-
 }

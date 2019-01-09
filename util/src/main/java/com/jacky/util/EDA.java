@@ -16,7 +16,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Created by lixinquan on 2018/10/31.
+ * Created by jacky on 2018/10/31.
  *
  * 加密解密算法集合
  */
@@ -198,5 +198,4 @@ public @interface EDA {
             return Long.toHexString(hashcode);
         }
     }
-
 }

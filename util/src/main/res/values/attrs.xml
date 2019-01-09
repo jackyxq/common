@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ShapeTextView">
+        <attr name="solid" format="reference|color"/>
+        <attr name="strikeColor" format="reference|color"/>
+        <attr name="strikeWidth" format="dimension|reference"/>
+        <attr name="android:topLeftRadius"/>
+        <attr name="android:topRightRadius"/>
+        <attr name="android:bottomLeftRadius"/>
+        <attr name="android:bottomRightRadius"/>
+        <attr name="android:radius"/>
+    </declare-styleable>
+
+    <declare-styleable name="LoopViewPager">
+        <attr name="autoscroll" format="boolean" />
+        <attr name="scroll_time" format="integer" />
+        <attr name="show_navgation_dot" format="boolean" />
+        <attr name="navgation_padding" format="dimension" />
+    </declare-styleable>
+</resources>

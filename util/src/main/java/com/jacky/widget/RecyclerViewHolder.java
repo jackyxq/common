@@ -1,5 +1,6 @@
 package com.jacky.widget;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jacky.log.Logger;
+
 import java.lang.ref.WeakReference;
 
 /**
- * Created by lixinquan on 2016/10/30.
+ * Created by jacky on 2016/10/30.
  */
 
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
@@ -64,5 +67,33 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public Button getButton(int id) {
         return getView(id);
+    }
+
+    /**
+     * 滚动到最后一条记录的时候，自动加载更多
+     */
+    public static abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
+
+        private LinearLayoutManager layoutManager;
+        private int itemCount, lastPosition, lastItemCount;
+
+        public abstract void onLoadMore();
+
+        @Override
+        public final void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                itemCount = layoutManager.getItemCount();
+                lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+            } else {
+                Logger.w("OnLoadMoreListener", "The OnLoadMoreListener only support LinearLayoutManager");
+                return;
+            }
+            if(itemCount < 10) return; //小于10条 就不加载更多了
+            if (lastItemCount != itemCount && lastPosition == itemCount - 1) {
+                lastItemCount = itemCount;
+                this.onLoadMore();
+            }
+        }
     }
 }

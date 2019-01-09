@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by lixinquan on 2017-07-21.
+ * Created by jacky on 2017-07-21.
  */
 
 public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewHolder>

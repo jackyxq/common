@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Created by lixinquan on 2018/10/29.
+ * Created by jacky on 2018/10/29.
  */
 public final class StringUtil {
 
@@ -34,7 +34,15 @@ public final class StringUtil {
         }
         return 0;
     }
-
+    /**
+     * 用于判断2个double类型的值 是否相同
+     * @param value1
+     * @param value2
+     * @return
+     */
+    public static boolean equals(double value1, double value2) {
+        return Math.abs(value1 - value2) < 0.0000001;
+    }
     /**
      * 从URL解析出参数的值
      * @param url
@@ -76,4 +84,5 @@ public final class StringUtil {
         DateFormat format = new SimpleDateFormat(pattern, Locale.CHINESE);
         return format.format(new Date(time));
     }
+
 }
