@@ -105,6 +105,9 @@ public class LoopViewPager extends FrameLayout {
         mViewPager.setAdapter(adapter);
     }
 
+    public int getCurrentItem() {
+        return mViewPager.getCurrentItem();
+    }
 //    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
 //        mViewPager.addOnPageChangeListener(listener);
 //    }
