@@ -3,6 +3,7 @@ package com.jacky.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -57,11 +58,13 @@ public class LoopViewPager extends FrameLayout {
         int padding = a.getDimensionPixelSize(R.styleable.LoopViewPager_navgation_padding, 0);
         a.recycle();
 
-        addView(mViewPager = new ViewPager(context){
-
-        });
+        addView(mViewPager = new ViewPager(context));
         LayoutParams p = new LayoutParams(-2, -2);
-        p.bottomMargin = padding;
+        if(padding < 0) {
+            mViewPager.setPadding(0,0,0,0 - padding);
+        } else {
+            p.bottomMargin = padding;
+        }
         p.gravity = Gravity.CENTER_HORIZONTAL|Gravity.BOTTOM;
         addView(mIndicators = new LinearLayout(context), p);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -213,14 +216,22 @@ public class LoopViewPager extends FrameLayout {
         }
     }
 
-    private Drawable getDrawable() {
+    private Drawable getIndicator() {
+        int size = AppUtil.dip2px(getContext(), 7);
         StateListDrawable drawable = new StateListDrawable();
 
-        ShapeDrawable drawable1 = new ShapeDrawable();
-        drawable1.setShape(new OvalShape());
-//        drawable1.set
+        ShapeDrawable drawable1 = new ShapeDrawable(new OvalShape());
+        drawable1.getPaint().setColor(0xff276FAA);
+        drawable1.setIntrinsicWidth(size);
+        drawable1.setIntrinsicHeight(size);
+        drawable.addState(new int[]{android.R.attr.state_selected}, drawable1);
 
-        drawable.addState(new int []{android.R.attr.state_selected}, drawable1);
-        return  drawable;
+        GradientDrawable drawable2 = new GradientDrawable ();
+        drawable2.setColor(0xffffffff);
+        drawable2.setCornerRadius(size);
+        drawable2.setStroke(AppUtil.dip2px(getContext(), 0.8f), 0xff276FAA);
+        drawable2.setSize(size, size);
+        drawable.addState(new int[]{}, drawable2);
+        return drawable;
     }
 }
