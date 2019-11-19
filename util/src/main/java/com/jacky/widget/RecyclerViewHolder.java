@@ -1,5 +1,6 @@
 package com.jacky.widget;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -20,6 +21,7 @@ import java.lang.ref.WeakReference;
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     private SparseArray<WeakReference<View>> mViews;
+    private long lastTime;
 
     public RecyclerViewHolder(View itemView) {
         super(itemView);
@@ -36,11 +38,15 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         return (T) tt;
     }
 
-    public RecyclerViewHolder setOnItemClickListener(final AdapterView.OnItemClickListener listener) {
+    public RecyclerViewHolder setOnItemClickListener(@NonNull final AdapterView.OnItemClickListener listener) {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemClick(null, v, getPosition(), v.getId());
+                long t = System.currentTimeMillis();
+                if(t - lastTime > 1000) {
+                    lastTime = t;
+                    listener.onItemClick(null, v, getPosition(), v.getId());
+                }
             }
         });
         return this;
