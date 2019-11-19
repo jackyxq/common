@@ -4,14 +4,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jacky.log.Logger;
 import com.jacky.util.AppUtil;
 import com.jacky.util.EDA;
-import com.jacky.util.PreferenceUtils;
+import com.jacky.widget.LoopPagerAdapter;
+import com.jacky.widget.LoopViewPager;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     mTextMessage.setText(R.string.title_home);
-
-
+//                    ToastUtil.showLongMsg(Thread.currentThread().getName());
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -62,14 +67,47 @@ public class MainActivity extends AppCompatActivity {
         TextView aesdView = findViewById(R.id.aes_d);
         aesdView.setText(EDA.AES.decrypt(s, "1234566766文"));
 
-        PreferenceUtils.put("file", "key", "ddddeeeeeeeetyyy");
-        String p = PreferenceUtils.getString("file", "key");
-        Logger.e(p);
+        LoopPagerAdapter adapter =new LoopPagerAdapter<String>() {
+            @Override
+            public View getItemView(ViewGroup container, int position) {
+                TextView view = new TextView(container.getContext());
+                view.setText(String.valueOf(position));
+                return view;
+            }
+
+            @Override
+            public int getCount() {
+                return 3;
+            }
+        };
+        LoopViewPager pager = findViewById(R.id.loop);
+        pager.setAdapter(adapter);
+        pager.notifyDataSetChanged();
+
+//        PreferenceUtils.put("file", "key", "ddddeeeeeeeetyyy");
+//        String p = PreferenceUtils.getString("file", "key");
+//        Logger.e(p);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Logger.d("wait file digest...");
+                checkFile();
+            }
+        }).start();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Logger.e(AppUtil.isPermissionOK(permissions, grantResults));
+    }
+
+    private void checkFile() {
+        File file = new File("/sdcard/GZYProFile/VideoSaveDir/xjlx20191118151525.mp4");
+        long start = System.currentTimeMillis();
+        String ss = EDA.MD5.digest(file);
+        long end = System.currentTimeMillis();
+        Logger.e("splite cost " + (end - start) + " \t " +  ss);
     }
 }

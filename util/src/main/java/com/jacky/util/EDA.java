@@ -4,9 +4,17 @@ import android.text.TextUtils;
 
 import com.jacky.log.Logger;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.URI;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -96,19 +104,28 @@ public @interface EDA {
         }
 
         /**
-         *  获取文件的信息摘要
+         * 获取文件的信息摘要
          * @param file
          * @return
          */
         public static String digest(File file) {
+            return digest(file, 1024 * 2);
+        }
+        /**
+         *  获取文件的信息摘要
+         * @param file
+         * @param blockSize 执行一次计算的byte数
+         * @return
+         */
+        public static String digest(File file, int blockSize) {
             if(file == null || !file.exists()) return "";
 
-            FileInputStream stream = null;
+            BufferedInputStream stream = null;
             try {
-                stream = new FileInputStream(file);
+                stream = new BufferedInputStream(new FileInputStream(file));
                 MessageDigest mdTemp = MessageDigest.getInstance("MD5");
                 int i;
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[blockSize];
                 while (true) {
                     i = stream.read(bytes);
                     if(i == -1) break;
