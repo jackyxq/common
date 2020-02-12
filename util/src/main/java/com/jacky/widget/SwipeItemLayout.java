@@ -54,6 +54,7 @@ public class SwipeItemLayout extends FrameLayout {
             LayoutParams layout = (LayoutParams) view.getLayoutParams();
             if(layout.gravity == LayoutParams.UNSPECIFIED_GRAVITY) {
                 mainView = view;
+                mainView.setClickable(true); //防止被盖住的左右按钮被点击
             }else if(layout.gravity == Gravity.LEFT) {
                 leftView = view;
                 leftMaxOffset = view.getMeasuredWidth();
