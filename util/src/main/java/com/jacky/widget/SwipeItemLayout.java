@@ -22,6 +22,8 @@ public class SwipeItemLayout extends FrameLayout {
     private int leftMaxOffset, rightMaxOffset;
     private boolean canSwipe;
 
+    private View.OnClickListener listener;
+
     public SwipeItemLayout(@NonNull Context context) {
         super(context);
         init(context, null);
@@ -54,7 +56,12 @@ public class SwipeItemLayout extends FrameLayout {
             LayoutParams layout = (LayoutParams) view.getLayoutParams();
             if(layout.gravity == LayoutParams.UNSPECIFIED_GRAVITY) {
                 mainView = view;
-                mainView.setClickable(true); //防止被盖住的左右按钮被点击
+                mainView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(listener != null) listener.onClick(SwipeItemLayout.this);
+                    }
+                }); //防止被盖住的左右按钮被点击
             }else if(layout.gravity == Gravity.LEFT) {
                 leftView = view;
                 leftMaxOffset = view.getMeasuredWidth();
@@ -66,6 +73,11 @@ public class SwipeItemLayout extends FrameLayout {
             }
 //            Logger.d(view.getMeasuredWidth(), layout.gravity,view.isClickable());
         }
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        listener = l;
     }
 
     @Override
