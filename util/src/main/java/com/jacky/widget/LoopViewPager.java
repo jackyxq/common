@@ -114,6 +114,9 @@ public class LoopViewPager extends FrameLayout {
 //    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
 //        mViewPager.addOnPageChangeListener(listener);
 //    }
+    public void showIndicator(boolean show) {
+        mIndicators.setVisibility(show ? VISIBLE : GONE);
+    }
 
     public void notifyDataSetChanged() {
         mIndicators.removeAllViews();
@@ -122,7 +125,9 @@ public class LoopViewPager extends FrameLayout {
 
         PagerAdapter adapter = mViewPager.getAdapter();
         int size = adapter.getCount();
-        if(adapter instanceof LoopPagerAdapter && size > 1) {
+        if(size <= 1) return; //只有一个不显示指示
+
+        if(adapter instanceof LoopPagerAdapter) {
             isLoop = ((LoopPagerAdapter) adapter).isLoop;
         } else {
             isLoop = false;
