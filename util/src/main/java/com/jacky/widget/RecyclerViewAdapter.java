@@ -84,7 +84,9 @@ public abstract class RecyclerViewAdapter<T> extends RecyclerView.Adapter<Recycl
     }
 
     public void removeData(int position) {
-        mData.remove(position);
+        if(mData != null && mData.size() > position) {
+            mData.remove(position);
+        }
         notifyDataSetChanged();
     }
 
