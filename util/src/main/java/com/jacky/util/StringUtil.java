@@ -44,6 +44,15 @@ public final class StringUtil {
         return Math.abs(value1 - value2) < 0.0000001;
     }
     /**
+     * 用于判断2个float类型的值 是否相同
+     * @param value1
+     * @param value2
+     * @return
+     */
+    public static boolean equals(float value1, float value2) {
+        return Math.abs(value1 - value2) < 0.0000001;
+    }
+    /**
      * 从URL解析出参数的值
      * @param url
      * @return
