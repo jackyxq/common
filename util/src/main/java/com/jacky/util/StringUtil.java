@@ -34,6 +34,15 @@ public final class StringUtil {
         }
         return 0;
     }
+    public static long parseLong(String string){
+        if(TextUtils.isEmpty(string)) return 0;
+        try {
+            return Long.parseLong(string);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
     /**
      * 用于判断2个double类型的值 是否相同
      * @param value1
