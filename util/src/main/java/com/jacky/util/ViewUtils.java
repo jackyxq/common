@@ -199,4 +199,10 @@ public final class ViewUtils {
         Fragment baseFragment = manager.findFragmentByTag(tag);
         return (T)baseFragment;
     }
+
+    public static <T extends Fragment> T findVisibleFragment(FragmentActivity activity, Class<T> fragment) {
+        T t = findFragment(activity, fragment);
+        if(t == null) return  null;
+        return t.isVisible() ? t : null;
+    }
 }
