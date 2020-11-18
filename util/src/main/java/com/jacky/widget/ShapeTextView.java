@@ -40,7 +40,7 @@ public class ShapeTextView extends AppCompatTextView {
     private void initView(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ShapeTextView);
         topLeftRadius = topRightRadius = bottomLeftRadius = bottomRightRadius =
-                a.getDimension(R.styleable.ShapeTextView_android_radius, 0);
+                a.getDimension(R.styleable.ShapeTextView_android_radius, 1);//使用1像素来画，不然会不显示背景
         if(a.hasValue(R.styleable.ShapeTextView_android_topLeftRadius)) {
             topLeftRadius = a.getDimension(R.styleable.ShapeTextView_android_topLeftRadius, 0);
         }

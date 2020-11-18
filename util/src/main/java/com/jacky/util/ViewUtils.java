@@ -205,4 +205,12 @@ public final class ViewUtils {
         if(t == null) return  null;
         return t.isVisible() ? t : null;
     }
+
+    public static void dismissDialog(Dialog dialog) {
+        try {
+            dialog.dismiss();
+        } catch (IllegalArgumentException e) {
+            Logger.w(e.getMessage());
+        }
+    }
 }

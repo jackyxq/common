@@ -23,8 +23,8 @@ allprojects {
     }
 }
 ext {
-    ALL_VERSION = '1.0.8'
-    ALL_VERSION_CODE = 108
+    ALL_VERSION = '1.0.9'
+    ALL_VERSION_CODE = 109
 }
 task clean(type: Delete) {
     delete rootProject.buildDir

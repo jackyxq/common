@@ -54,6 +54,12 @@ package com.jacky.compiler;
             "        mToast.setText(text);\n" +
             "        mToast.show();\n" +
             "    }\n" +
+            "    \n" +
+            "    public static void cancel() {\n" +
+            "        if(mToast != null) {\n" +
+            "            mToast.cancel();\n" +
+            "        }\n" +
+            "    }\n" +
             "\n" +
             "    private static void get(int time) {\n" +
             "            if(mToast != null) {\n" +

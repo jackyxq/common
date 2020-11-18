@@ -4,6 +4,7 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -42,6 +43,22 @@ public final class StringUtil {
             e.printStackTrace();
         }
         return 0;
+    }
+    /**
+     * 将格式化的时间字符串逆编码为long值
+     * @param time
+     * @param pattern
+     * @return
+     */
+    public static long parseDateString(String time, String pattern) {
+        long d = 0;
+        try {
+            Date date = new SimpleDateFormat(pattern, Locale.CHINESE).parse(time);
+            d = date != null ? date.getTime() : 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return d;
     }
     /**
      * 用于判断2个double类型的值 是否相同

@@ -48,6 +48,12 @@ public final class ToastUtil {
         mToast.show();
     }
 
+    public static void cancel() {
+        if(mToast != null) {
+            mToast.cancel();
+        }
+    }
+
     private static void get(int time) {
             if(mToast != null) {
                 mToast.cancel();

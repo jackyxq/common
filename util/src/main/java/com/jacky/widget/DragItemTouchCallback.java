@@ -1,6 +1,7 @@
 package com.jacky.widget;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Vibrator;
 import android.support.annotation.RequiresPermission;
@@ -82,6 +83,7 @@ public class DragItemTouchCallback extends ItemTouchHelper.Callback {
         mAdapter.notifyItemRemoved(pos);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         if(actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
