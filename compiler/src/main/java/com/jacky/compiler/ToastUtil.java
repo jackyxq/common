@@ -10,15 +10,16 @@ package com.jacky.compiler;
             "import android.app.Activity;\n" +
             "import android.content.Context;\n" +
             "import android.graphics.PixelFormat;\n" +
-            "import android.support.annotation.StringRes;\n" +
-            "import android.support.design.widget.Snackbar;\n" +
-            "import android.support.v4.app.Fragment;\n" +
             "import android.view.Gravity;\n" +
             "import android.view.View;\n" +
             "import android.view.WindowManager;\n" +
             "import android.widget.TextView;\n" +
             "import android.widget.Toast;\n" +
             "\n" +
+            "import androidx.annotation.StringRes;\n" +
+            "import androidx.fragment.app.Fragment;\n" +
+            "\n" +
+            "import com.google.android.material.snackbar.Snackbar;\n" +
             "import com.jacky.log.Logger;\n" +
             "\n" +
             "import static android.content.Context.WINDOW_SERVICE;\n" +

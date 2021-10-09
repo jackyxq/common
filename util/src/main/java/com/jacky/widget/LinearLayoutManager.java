@@ -1,7 +1,7 @@
 package com.jacky.widget;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.jacky.log.Logger;
@@ -9,7 +9,7 @@ import com.jacky.log.Logger;
 /**
  * Created by lixinquan on 2020/7/6.
  */
-public class LinearLayoutManager extends android.support.v7.widget.LinearLayoutManager {
+public class LinearLayoutManager extends androidx.recyclerview.widget.LinearLayoutManager {
 
     public LinearLayoutManager(Context context) {
         super(context);

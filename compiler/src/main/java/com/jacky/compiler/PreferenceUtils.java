@@ -8,7 +8,7 @@ package com.jacky.compiler;
     String value = "package com.jacky.util;\n" +
             "\n" +
             "import android.content.SharedPreferences;\n" +
-            "import android.support.v4.util.Pair;\n" +
+            "import androidx.core.util.Pair;\n" +
             "import android.content.Context;\n" +
             "\n" +
             "/**\n" +

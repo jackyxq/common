@@ -1,7 +1,7 @@
 package com.jacky.util;
 
 import android.content.SharedPreferences;
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 import android.content.Context;
 
 /**
