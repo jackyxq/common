@@ -54,6 +54,12 @@ public final class ViewUtils {
         }
     }
 
+    public static void setViewInvisible(@NonNull View... views) {
+        for(View view : views) {
+            view.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public static void setViewParentVisibility(@NonNull View view, int visible) {
         View p = (View) view.getParent();
         p.setVisibility(visible);
