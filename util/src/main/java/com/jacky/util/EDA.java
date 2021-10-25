@@ -1,6 +1,7 @@
 package com.jacky.util;
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.jacky.log.Logger;
 
@@ -20,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -76,6 +78,34 @@ public @interface EDA {
                 byte[] bss = Arrays.copyOf(bs, count + bs.length);
                 return new SecretKeySpec(bss, AES);
             }
+        }
+    }
+
+    class SHA256 {
+
+        public static byte[] sha256_mac(String string, String key) {
+            try {
+                Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+                SecretKeySpec secret_key = new SecretKeySpec(key.getBytes(),"HmacSHA256");
+                sha256_HMAC.init(secret_key);
+                byte[] bytes = sha256_HMAC.doFinal(string.getBytes());
+                return bytes;
+            } catch (Exception e) {
+                Logger.e(e);
+            }
+            return null;
+        }
+
+        public static String sha256_macToHex(String string, String key) {
+            byte[] bytes = sha256_mac(string, key);
+            if(bytes == null) return null;
+            return Formatter.transferByte2String(bytes);
+        }
+
+        public static String sha256_macToBase64(String string, String key) {
+            byte[] bytes = sha256_mac(string, key);
+            if(bytes == null) return null;
+            return Base64.encodeToString(bytes, Base64.DEFAULT);
         }
     }
 
