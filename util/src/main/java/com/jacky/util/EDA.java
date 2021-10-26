@@ -2,20 +2,12 @@ package com.jacky.util;
 
 import android.text.TextUtils;
 import android.util.Base64;
-
-import com.jacky.log.Logger;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.net.URI;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -33,41 +25,44 @@ import javax.crypto.spec.SecretKeySpec;
 public @interface EDA {
 
     class AES {
-        private static final String CipherMode = "AES/CFB/NoPadding";//使用CFB加密，需要设置IV
+        private static final String CipherMode = "AES/CBC/PKCS5Padding";
         private static final String AES = "AES";
 
-        public static String encrypt(String content, String password) {
+        public static String encrypt(String content, String password, boolean hex) {
             try {
                 Cipher cipher = Cipher.getInstance(CipherMode);
                 SecretKeySpec keyspec = getKey(password);
                 cipher.init(Cipher.ENCRYPT_MODE, keyspec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
                 byte[] encrypted = cipher.doFinal(content.getBytes());
-//                return android.util.Base64.encodeToString(encrypted, android.util.Base64.DEFAULT);
-                return Formatter.transferByte2String(encrypted);
+                if(hex) {
+                    return Formatter.transferByte2String(encrypted);
+                }
+                return Base64.encodeToString(encrypted, Base64.DEFAULT);
             } catch (Exception e) {
-                Logger.e(e);
+                Log.e("EDA", "", e);
                 return null;
             }
         }
 
-        public static String decrypt(String content, String password) {
+        public static String decrypt(String content, String password, boolean hex) {
             try {
-//                byte[] encrypted1 = android.util.Base64.decode(content.getBytes(), android.util.Base64.DEFAULT);
-                byte[] encrypted1 = Formatter.transferString2Byte(content);
+                byte[] encrypted1 = hex ?
+                        Formatter.transferString2Byte(content) :
+                        Base64.decode(content.getBytes(), Base64.DEFAULT);
                 Cipher cipher = Cipher.getInstance(CipherMode);
                 SecretKeySpec keyspec = getKey(password);
                 cipher.init(Cipher.DECRYPT_MODE, keyspec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
                 byte[] original = cipher.doFinal(encrypted1);
                 return new String(original, "UTF-8");
             } catch (Exception e) {
-                Logger.e(e);
+                Log.e("EDA", "", e);
                 return null;
             }
         }
 
         private static SecretKeySpec getKey(String password) {
             byte[] bs = password.getBytes();
-            Logger.i("ori password's length:", bs.length);
+//            Log.i("EDA", "ori password's length:" + bs.length);
             int count = 0;
             if(bs.length <= 16) count = 16 - bs.length;
             else if(bs.length <= 24) count = 24 - bs.length;
@@ -83,29 +78,21 @@ public @interface EDA {
 
     class SHA256 {
 
-        public static byte[] sha256_mac(String string, String key) {
+        public static String sha256_mac(String string, String key, boolean hex) {
             try {
                 Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
                 SecretKeySpec secret_key = new SecretKeySpec(key.getBytes(),"HmacSHA256");
                 sha256_HMAC.init(secret_key);
                 byte[] bytes = sha256_HMAC.doFinal(string.getBytes());
-                return bytes;
+                if(hex) {
+                    return Formatter.transferByte2String(bytes);
+                } else {
+                    return Base64.encodeToString(bytes, Base64.DEFAULT);
+                }
             } catch (Exception e) {
-                Logger.e(e);
+                Log.e("EDA", "", e);
             }
             return null;
-        }
-
-        public static String sha256_macToHex(String string, String key) {
-            byte[] bytes = sha256_mac(string, key);
-            if(bytes == null) return null;
-            return Formatter.transferByte2String(bytes);
-        }
-
-        public static String sha256_macToBase64(String string, String key) {
-            byte[] bytes = sha256_mac(string, key);
-            if(bytes == null) return null;
-            return Base64.encodeToString(bytes, Base64.DEFAULT);
         }
     }
 
@@ -164,7 +151,7 @@ public @interface EDA {
                 byte[] b = mdTemp.digest();
                 return Formatter.transferByte2String(b);
             } catch (Exception e) {
-                Logger.e(e);
+                Log.e("EDA", "", e);
                 return "";
             } finally {
                 if(stream != null) {
@@ -185,7 +172,7 @@ public @interface EDA {
                 mdTemp.update(bytes);
                 return mdTemp.digest();
             } catch (NoSuchAlgorithmException e) {
-                Logger.e(e);
+                Log.e("EDA", "", e);
                 return bytes;
             }
         }
