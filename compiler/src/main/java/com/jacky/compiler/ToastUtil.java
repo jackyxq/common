@@ -10,6 +10,10 @@ package com.jacky.compiler;
             "import android.app.Activity;\n" +
             "import android.content.Context;\n" +
             "import android.graphics.PixelFormat;\n" +
+            "import android.os.Build;\n" +
+            "import android.os.Handler;\n" +
+            "import android.os.Message;\n" +
+            "import android.util.Log;\n" +
             "import android.view.Gravity;\n" +
             "import android.view.View;\n" +
             "import android.view.WindowManager;\n" +
@@ -20,7 +24,7 @@ package com.jacky.compiler;
             "import androidx.fragment.app.Fragment;\n" +
             "\n" +
             "import com.google.android.material.snackbar.Snackbar;\n" +
-            "import com.jacky.log.Logger;\n" +
+            "import java.lang.reflect.Field;\n" +
             "\n" +
             "import static android.content.Context.WINDOW_SERVICE;\n" +
             "\n" +
@@ -30,32 +34,76 @@ package com.jacky.compiler;
             "\n" +
             "public final class ToastUtil {\n" +
             "\n" +
+            "    private static boolean mIsHookInit = false;\n" +
+            "    private static Field sField_TN;\n" +
+            "    private static Field sField_TN_Handler;\n" +
+            "    private static final String FIELD_NAME_TN = \"mTN\";\n" +
+            "    private static final String FIELD_NAME_HANDLER = \"mHandler\";\n" +
             "    private static Toast mToast;\n" +
+            "\n" +
+            "    //只有android 7.* 系统会\n" +
+            "    //参考文档： https://blog.csdn.net/tksnail/article/details/103841070\n" +
+            "    private static boolean isNeedCheckToast() {\n" +
+            "        int cur = Build.VERSION.SDK_INT;\n" +
+            "        return Build.VERSION_CODES.N == cur || Build.VERSION_CODES.N_MR1 == cur;\n" +
+            "    }\n" +
+            "\n" +
+            "    /**\n" +
+            "     * 通过hook进行替换Toast.TN.Handler\n" +
+            "     */\n" +
+            "    private static Toast hookToast(Toast toast) {\n" +
+            "        try {\n" +
+            "            if(!mIsHookInit) {\n" +
+            "                sField_TN = Toast.class.getDeclaredField(FIELD_NAME_TN);\n" +
+            "                sField_TN.setAccessible(true);\n" +
+            "                sField_TN_Handler = sField_TN.getType().getDeclaredField(FIELD_NAME_HANDLER);\n" +
+            "                sField_TN_Handler.setAccessible(true);\n" +
+            "                mIsHookInit = true;\n" +
+            "            }\n" +
+            "            //替换对象\n" +
+            "            Object tn = sField_TN.get(toast);\n" +
+            "            Handler originalHandler = (Handler)sField_TN_Handler.get(tn);\n" +
+            "            if(!(originalHandler instanceof SafelyHandlerWrapper)) {\n" +
+            "                sField_TN_Handler.set(tn, new SafelyHandlerWrapper(originalHandler));\n" +
+            "            }\n" +
+            "        }catch (Exception e){\n" +
+            "            Log.e(\"logger\",\"hook toast exception:\" + e);\n" +
+            "        }\n" +
+            "        return toast;\n" +
+            "    }\n" +
+            "\n" +
+            "    public static void show(Toast toast) {\n" +
+            "        if(toast == null) return;\n" +
+            "        if(isNeedCheckToast()) {\n" +
+            "            hookToast(toast);\n" +
+            "        }\n" +
+            "        toast.show();\n" +
+            "    }\n" +
             "\n" +
             "    public static void showMsg(@StringRes int resId) {\n" +
             "        get(Toast.LENGTH_SHORT);\n" +
             "        mToast.setText(resId);\n" +
-            "        mToast.show();\n" +
+            "        show(mToast);\n" +
             "    }\n" +
             "\n" +
             "    public static void showMsg(CharSequence text) {\n" +
             "        get(Toast.LENGTH_SHORT);\n" +
             "        mToast.setText(text);\n" +
-            "        mToast.show();\n" +
+            "        show(mToast);\n" +
             "    }\n" +
             "\n" +
             "    public static void showLongMsg(@StringRes int resId) {\n" +
-            "       get(Toast.LENGTH_LONG);\n" +
+            "        get(Toast.LENGTH_LONG);\n" +
             "        mToast.setText(resId);\n" +
-            "        mToast.show();\n" +
+            "        show(mToast);\n" +
             "    }\n" +
             "\n" +
             "    public static void showLongMsg(CharSequence text) {\n" +
-            "       get(Toast.LENGTH_LONG);\n" +
+            "        get(Toast.LENGTH_LONG);\n" +
             "        mToast.setText(text);\n" +
-            "        mToast.show();\n" +
+            "        show(mToast);\n" +
             "    }\n" +
-            "    \n" +
+            "\n" +
             "    public static void cancel() {\n" +
             "        if(mToast != null) {\n" +
             "            mToast.cancel();\n" +
@@ -63,21 +111,21 @@ package com.jacky.compiler;
             "    }\n" +
             "\n" +
             "    private static void get(int time) {\n" +
-            "            if(mToast != null) {\n" +
-            "                mToast.cancel();\n" +
-            "            }\n" +
-            "            mToast = Toast.makeText(%s, \"\", time);\n" +
-            "            mToast.setGravity(Gravity.CENTER, 0, 0);\n" +
-            "            mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {\n" +
-            "                        @Override\n" +
-            "                        public void onViewAttachedToWindow(View v) {}\n" +
-            "\n" +
-            "                        @Override\n" +
-            "                        public void onViewDetachedFromWindow(View v) {\n" +
-            "                               mToast = null;\n" +
-            "                        }\n" +
-            "                    });\n" +
+            "        if(mToast != null) {\n" +
+            "            mToast.cancel();\n" +
             "        }\n" +
+            "        mToast = Toast.makeText(%s, \"\", time);\n" +
+            "        mToast.setGravity(Gravity.CENTER, 0, 0);\n" +
+            "        mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {\n" +
+            "            @Override\n" +
+            "            public void onViewAttachedToWindow(View v) {}\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public void onViewDetachedFromWindow(View v) {\n" +
+            "                mToast = null;\n" +
+            "            }\n" +
+            "        });\n" +
+            "    }\n" +
             "\n" +
             "    public static void showSnackBar(Activity activity, CharSequence text) {\n" +
             "        View view = activity.getWindow().getDecorView();\n" +
@@ -94,34 +142,34 @@ package com.jacky.compiler;
             "        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();\n" +
             "    }\n" +
             "\n" +
-            "    public static boolean showToast(Context context, String string) {\n" +
-            "        //这个方法在小米mx5上不兼容\n" +
-            "        final WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);\n" +
-            "        WindowManager.LayoutParams params = new WindowManager.LayoutParams();\n" +
-            "        params.type = WindowManager.LayoutParams.TYPE_TOAST;\n" +
-            "        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;\n" +
-            "        params.format = PixelFormat.TRANSLUCENT;\n" +
-            "        params.width = WindowManager.LayoutParams.WRAP_CONTENT;\n" +
-            "        params.height = WindowManager.LayoutParams.WRAP_CONTENT;\n" +
-            "        params.gravity = Gravity.CENTER;\n" +
+            "    /**\n" +
+            "     * 用于对Toast内部类TN中的内部对象mHandler，进行装饰\n" +
+            "     */\n" +
+            "    private static class SafelyHandlerWrapper extends Handler {\n" +
+            "        private Handler mOriginalHandler;\n" +
             "\n" +
-            "        final TextView view = new TextView(context);\n" +
-            "        view.setText(string);\n" +
-            "        view.setTextColor(0xffffffff);\n" +
-            "        view.setBackgroundColor(0x7f000000);\n" +
-            "        view.postDelayed(new Runnable() {\n" +
-            "            @Override\n" +
-            "            public void run() {\n" +
-            "                wm.removeView(view);\n" +
-            "            }\n" +
-            "        }, 1000);\n" +
-            "        try {\n" +
-            "            wm.addView(view, params);\n" +
-            "        } catch (Exception e) {\n" +
-            "            Logger.w(e);\n" +
-            "            return false;\n" +
+            "        SafelyHandlerWrapper(Handler originalHandler){\n" +
+            "            this.mOriginalHandler = originalHandler;\n" +
             "        }\n" +
-            "        return true;\n" +
+            "\n" +
+            "        @Override\n" +
+            "        public void dispatchMessage(Message msg) {\n" +
+            "            //发生异常代码的执行顺序：Handler.dispatchMessage()->Toast$TN$Handler.handleMessage()->Toast$TN.handleShow()，该处可能发生BadTokenException\n" +
+            "            //内部handler异常，外部可以捕获\n" +
+            "            try {\n" +
+            "                super.dispatchMessage(msg);\n" +
+            "            }catch (Exception e){\n" +
+            "                Log.d(\"logger\",\"catch Toast exception:\" + e);\n" +
+            "            }\n" +
+            "        }\n" +
+            "\n" +
+            "        @Override\n" +
+            "        public void handleMessage(Message msg) {\n" +
+            "            //委托给原Handler执行\n" +
+            "            if(mOriginalHandler != null) {\n" +
+            "                mOriginalHandler.handleMessage(msg);\n" +
+            "            }\n" +
+            "        }\n" +
             "    }\n" +
             "}";
 }

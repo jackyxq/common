@@ -3,6 +3,10 @@ package com.jacky.util;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,7 +17,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.jacky.log.Logger;
+import java.lang.reflect.Field;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -23,30 +27,74 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public final class ToastUtil {
 
+    private static boolean mIsHookInit = false;
+    private static Field sField_TN;
+    private static Field sField_TN_Handler;
+    private static final String FIELD_NAME_TN = "mTN";
+    private static final String FIELD_NAME_HANDLER = "mHandler";
     private static Toast mToast;
+
+    //只有android 7.* 系统会
+    //参考文档： https://blog.csdn.net/tksnail/article/details/103841070
+    private static boolean isNeedCheckToast() {
+        int cur = Build.VERSION.SDK_INT;
+        return Build.VERSION_CODES.N == cur || Build.VERSION_CODES.N_MR1 == cur;
+    }
+
+    /**
+     * 通过hook进行替换Toast.TN.Handler
+     */
+    private static Toast hookToast(Toast toast) {
+        try {
+            if(!mIsHookInit) {
+                sField_TN = Toast.class.getDeclaredField(FIELD_NAME_TN);
+                sField_TN.setAccessible(true);
+                sField_TN_Handler = sField_TN.getType().getDeclaredField(FIELD_NAME_HANDLER);
+                sField_TN_Handler.setAccessible(true);
+                mIsHookInit = true;
+            }
+            //替换对象
+            Object tn = sField_TN.get(toast);
+            Handler originalHandler = (Handler)sField_TN_Handler.get(tn);
+            if(!(originalHandler instanceof SafelyHandlerWrapper)) {
+                sField_TN_Handler.set(tn, new SafelyHandlerWrapper(originalHandler));
+            }
+        }catch (Exception e){
+            Log.e("logger","hook toast exception:" + e);
+        }
+        return toast;
+    }
+
+    public static void show(Toast toast) {
+        if(toast == null) return;
+        if(isNeedCheckToast()) {
+            hookToast(toast);
+        }
+        toast.show();
+    }
 
     public static void showMsg(@StringRes int resId) {
         get(Toast.LENGTH_SHORT);
         mToast.setText(resId);
-        mToast.show();
+        show(mToast);
     }
 
     public static void showMsg(CharSequence text) {
         get(Toast.LENGTH_SHORT);
         mToast.setText(text);
-        mToast.show();
+        show(mToast);
     }
 
     public static void showLongMsg(@StringRes int resId) {
-       get(Toast.LENGTH_LONG);
+        get(Toast.LENGTH_LONG);
         mToast.setText(resId);
-        mToast.show();
+        show(mToast);
     }
 
     public static void showLongMsg(CharSequence text) {
-       get(Toast.LENGTH_LONG);
+        get(Toast.LENGTH_LONG);
         mToast.setText(text);
-        mToast.show();
+        show(mToast);
     }
 
     public static void cancel() {
@@ -56,21 +104,21 @@ public final class ToastUtil {
     }
 
     private static void get(int time) {
-            if(mToast != null) {
-                mToast.cancel();
-            }
-            mToast = Toast.makeText(%s, "", time);
-            mToast.setGravity(Gravity.CENTER, 0, 0);
-            mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                        @Override
-                        public void onViewAttachedToWindow(View v) {}
-
-                        @Override
-                        public void onViewDetachedFromWindow(View v) {
-                               mToast = null;
-                        }
-                    });
+        if(mToast != null) {
+            mToast.cancel();
         }
+        mToast = Toast.makeText(%s, "", time);
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+        mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {}
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                mToast = null;
+            }
+        });
+    }
 
     public static void showSnackBar(Activity activity, CharSequence text) {
         View view = activity.getWindow().getDecorView();
@@ -87,33 +135,33 @@ public final class ToastUtil {
         Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();
     }
 
-    public static boolean showToast(Context context, String string) {
-        //这个方法在小米mx5上不兼容
-        final WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.type = WindowManager.LayoutParams.TYPE_TOAST;
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        params.format = PixelFormat.TRANSLUCENT;
-        params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        params.gravity = Gravity.CENTER;
+    /**
+     * 用于对Toast内部类TN中的内部对象mHandler，进行装饰
+     */
+    private static class SafelyHandlerWrapper extends Handler {
+        private Handler mOriginalHandler;
 
-        final TextView view = new TextView(context);
-        view.setText(string);
-        view.setTextColor(0xffffffff);
-        view.setBackgroundColor(0x7f000000);
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                wm.removeView(view);
-            }
-        }, 1000);
-        try {
-            wm.addView(view, params);
-        } catch (Exception e) {
-            Logger.w(e);
-            return false;
+        SafelyHandlerWrapper(Handler originalHandler){
+            this.mOriginalHandler = originalHandler;
         }
-        return true;
+
+        @Override
+        public void dispatchMessage(Message msg) {
+            //发生异常代码的执行顺序：Handler.dispatchMessage()->Toast$TN$Handler.handleMessage()->Toast$TN.handleShow()，该处可能发生BadTokenException
+            //内部handler异常，外部可以捕获
+            try {
+                super.dispatchMessage(msg);
+            }catch (Exception e){
+                Log.d("logger","catch Toast exception:" + e);
+            }
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            //委托给原Handler执行
+            if(mOriginalHandler != null) {
+                mOriginalHandler.handleMessage(msg);
+            }
+        }
     }
 }

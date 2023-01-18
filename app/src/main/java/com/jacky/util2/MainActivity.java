@@ -1,5 +1,8 @@
 package com.jacky.util2;
 
+import android.content.ComponentName;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -9,14 +12,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jacky.log.Logger;
 import com.jacky.util.AppUtil;
 import com.jacky.util.EDA;
+import com.jacky.util.StringUtil;
+import com.jacky.util.ToastUtil;
 import com.jacky.widget.LoopPagerAdapter;
 import com.jacky.widget.LoopViewPager;
 
 import java.io.File;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
+                    ToastUtil.showMsg("testtet");
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
@@ -48,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Logger.w(EDA.SHA256.shaToBase64("123456", "12"));
-        Logger.w(EDA.SHA256.shaToHex("123456", "12"));
+        Logger.w(EDA.SHA256.sha256_mac("123456", "12", false));
+        Logger.w(EDA.SHA256.sha256_mac("123456", "12", true));
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -62,12 +70,12 @@ public class MainActivity extends AppCompatActivity {
         TextView md5View = findViewById(R.id.md5);
         md5View.setText(EDA.MD5.digest("123445"));
 
-        String s = EDA.AES.encrypt("123123213叫背个阁下", "1234566766文");
+        String s = EDA.AES.encrypt("123123213叫背个阁下", "1234566766文", true);
         TextView aesView = findViewById(R.id.aes);
         aesView.setText(s);
 
         TextView aesdView = findViewById(R.id.aes_d);
-        aesdView.setText(EDA.AES.decrypt(s, "1234566766文"));
+        aesdView.setText(EDA.AES.decrypt(s, "1234566766文", true));
 
         LoopPagerAdapter adapter =new LoopPagerAdapter<String>() {
             @Override
@@ -86,30 +94,16 @@ public class MainActivity extends AppCompatActivity {
         pager.setAdapter(adapter);
         pager.notifyDataSetChanged();
 
-//        PreferenceUtils.put("file", "key", "ddddeeeeeeeetyyy");
-//        String p = PreferenceUtils.getString("file", "key");
-//        Logger.e(p);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Logger.d("wait file digest...");
-                checkFile();
-            }
-        }).start();
+        Logger.d(StringUtil.toString(new String[]{"123", "3333", "yuiee"}));
+        Logger.d(StringUtil.toString(new String[]{"123", "3333", "yuiee"}, "/*/*/"));
+        Logger.d(StringUtil.formatDuration(156602));
+        Logger.d(StringUtil.formatDurationWithoutHour(156602));
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Logger.e(AppUtil.isPermissionOK(permissions, grantResults));
-    }
-
-    private void checkFile() {
-        File file = new File("/sdcard/GZYProFile/VideoSaveDir/xjlx20191118151525.mp4");
-        long start = System.currentTimeMillis();
-        String ss = EDA.MD5.digest(file);
-        long end = System.currentTimeMillis();
-        Logger.e("splite cost " + (end - start) + " \t " +  ss);
     }
 }

@@ -47,7 +47,7 @@ public class DragItemTouchCallback extends ItemTouchHelper.Callback {
         int swipeFlags = 0;
         if (layoutManager instanceof GridLayoutManager) {
             // 如果是Grid布局，则不能滑动，只能上下左右拖动
-            dragFlags = canDrag == false ? 0 :
+            dragFlags = !canDrag ? 0 :
                     (ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             swipeFlags = 0;
         } else if (layoutManager instanceof LinearLayoutManager) {
