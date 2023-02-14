@@ -22,8 +22,6 @@ package com.jacky.compiler;
             "\n" +
             "import androidx.annotation.StringRes;\n" +
             "import androidx.fragment.app.Fragment;\n" +
-            "\n" +
-            "import com.google.android.material.snackbar.Snackbar;\n" +
             "import java.lang.reflect.Field;\n" +
             "\n" +
             "import static android.content.Context.WINDOW_SERVICE;\n" +
@@ -116,7 +114,8 @@ package com.jacky.compiler;
             "        }\n" +
             "        mToast = Toast.makeText(%s, \"\", time);\n" +
             "        mToast.setGravity(Gravity.CENTER, 0, 0);\n" +
-            "        mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {\n" +
+            "        View view = mToast.getView();\n" +
+            "        if(view != null) view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {\n" +
             "            @Override\n" +
             "            public void onViewAttachedToWindow(View v) {}\n" +
             "\n" +
@@ -126,7 +125,7 @@ package com.jacky.compiler;
             "            }\n" +
             "        });\n" +
             "    }\n" +
-            "\n" +
+            "/*\n" +
             "    public static void showSnackBar(Activity activity, CharSequence text) {\n" +
             "        View view = activity.getWindow().getDecorView();\n" +
             "        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();\n" +
@@ -141,7 +140,7 @@ package com.jacky.compiler;
             "        View view = fragment.getView();\n" +
             "        Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();\n" +
             "    }\n" +
-            "\n" +
+            "*/\n" +
             "    /**\n" +
             "     * 用于对Toast内部类TN中的内部对象mHandler，进行装饰\n" +
             "     */\n" +

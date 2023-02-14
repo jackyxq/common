@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.snackbar.Snackbar;
 import java.lang.reflect.Field;
 
 import static android.content.Context.WINDOW_SERVICE;
@@ -109,7 +107,8 @@ public final class ToastUtil {
         }
         mToast = Toast.makeText(%s, "", time);
         mToast.setGravity(Gravity.CENTER, 0, 0);
-        mToast.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        View view = mToast.getView();
+        if(view != null) view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {}
 
@@ -119,7 +118,7 @@ public final class ToastUtil {
             }
         });
     }
-
+/*
     public static void showSnackBar(Activity activity, CharSequence text) {
         View view = activity.getWindow().getDecorView();
         Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();
@@ -134,7 +133,7 @@ public final class ToastUtil {
         View view = fragment.getView();
         Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show();
     }
-
+*/
     /**
      * 用于对Toast内部类TN中的内部对象mHandler，进行装饰
      */
